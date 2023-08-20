@@ -1,5 +1,7 @@
 import nltk
 from nltk.corpus import wordnet
+import re
+from datetime import datetime
 
 # global variables
 # key words as key for the user input
@@ -20,6 +22,8 @@ responses = {
     'track_related': 'tracking_content\n',
     'other_topic': 'other_content\n'
 }
+#file to record the user's input
+filename = './session.txt'
 
 # generate dictionary containing synonyms of the key words, as different users may use different wording for same question
 def generate_synonyms_dict(key_words):
@@ -149,3 +153,19 @@ def respond(message):
 # function to send user input
 def send_message(message):
     return respond(message)
+
+# check the session number and write session number for current conversation
+def check_session_number():
+    count = 1
+    with open(filename, 'r+') as file:
+        lines = file.readlines()
+        for line in lines:
+            if 'SESSION' in line:
+                count += 1
+        file.write(f'\nSESSION {count}:\n')
+
+# record the user input and save it into a txt file
+def record_message(message):
+    timestamp = datetime.now().strftime('%Y-%D %H:%M:%S')
+    with open(filename, 'a') as file:
+        file.write(f'{timestamp}: {message}\n')
