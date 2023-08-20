@@ -56,3 +56,60 @@ def generate_synonyms_dict(key_words):
     
     #print(dict_synonyms)
     return dict_synonyms
+
+# generate dictionary containing keywords to identify intent of the question.
+def generate_keywords_dict(list_words, key_list):
+    dict_synonyms = generate_synonyms_dict(list_words)
+    
+    keywords = {key:[] for key in key_list}
+    keywords['greeting'] = []
+    for each in list(dict_synonyms['hello']):
+        keywords['greeting'].append('.*' + each + '.*')
+
+    keywords['ending'] = []
+    for each in list(dict_synonyms['bye']):
+        keywords['ending'].append('.*' + each + '.*')
+
+    for each in list(dict_synonyms['satellite']):
+        keywords['sat_related'].append('.*' + each + '.*')
+        keywords['sat_related'].append('.*' + each + '.*' + "n't" + '.*')
+        keywords['sat_related'].append('.*' + each + '.*' + 'not' + '.*')
+        keywords['sat_related'].append('.*' + each + '.*' + 'issue' + '.*')
+        keywords['sat_related'].append('.*' + each + '.*' + 'problem' + '.*')
+        keywords['sat_related'].append('.*' + 'issue' + '.*' + each + '.*')
+        keywords['sat_related'].append('.*' + 'problem' + '.*' + each + '.*')
+
+    for each in list(dict_synonyms['tag']):
+        keywords['tag_related'].append('.*' + each + '.*' + "n't" + '.*')
+        keywords['tag_related'].append('.*' + each + '.*' + 'not' + '.*')
+        keywords['tag_related'].append('.*' + each + '.*' + 'issue' + '.*')
+        keywords['tag_related'].append('.*' + each + '.*' + 'problem' + '.*')
+        keywords['tag_related'].append('.*' + 'issue' + '.*' + each + '.*')
+        keywords['tag_related'].append('.*' + 'problem' + '.*' + each + '.*')
+        keywords['tag_related'].append('.*' + each + '.*' + 'tracked' + '.*')
+        keywords['tag_related'].append('.*' + each + '.*' + 'accuracy' + '.*')
+
+
+    for each in list(dict_synonyms['software']):
+        keywords['sw_related'].append('.*' + each + '.*' + "n't" + '.*')
+        keywords['sw_related'].append('.*' + each + '.*' + 'not' + '.*')
+        keywords['sw_related'].append('.*' + each + '.*' + 'issue' + '.*')
+        keywords['sw_related'].append('.*' + each + '.*' + 'problem' + '.*')
+        keywords['sw_related'].append('.*' + each + '.*' + 'accessed' + '.*')
+        keywords['sw_related'].append('.*' + 'issue' + '.*' + each + '.*')
+        keywords['sw_related'].append('.*' + 'problem' + '.*' + each + '.*')
+        keywords['sw_related'].append('.*' + 'access' + '.*' + each + '.*')
+
+
+    for each in list(dict_synonyms['tracking']):
+        keywords['track_related'].append('.*' + each + '.*' + "n't" + '.*')
+        keywords['track_related'].append('.*' + each + '.*' + 'not' + '.*')
+        keywords['track_related'].append('.*' + each + '.*' + 'issue' + '.*')
+        keywords['track_related'].append('.*' + each + '.*' + 'problem' + '.*')
+        keywords['track_related'].append('.*' + each + '.*' + 'bad' + '.*')
+        keywords['track_related'].append('.*' + 'bad' + '.*' + each + '.*')
+        keywords['track_related'].append('.*' + 'issue' + '.*' + each + '.*')
+        keywords['track_related'].append('.*' + 'problem' + '.*' + each + '.*')
+
+    #print(generate_keywords_dict(list_words, key_list))
+    return keywords
