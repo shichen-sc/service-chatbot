@@ -4,6 +4,7 @@ import re
 from datetime import datetime
 from rich.console import Console
 import sys
+nltk.download('wordnet')
 
 # global variables
 # key words as key for the user input
@@ -12,9 +13,9 @@ key_words = ['hello', 'bye', 'satellite', 'tag', 'software', 'tracking']
 key_list = ['greeting', 'ending', 'sat_related', 'tag_related', 'sw_related', 'track_related']
 #responses as the response content of the chat bot
 responses = {
-    'default_block' : 'Hello! I am the Service Robot from XXX Technologies GmbH. I am happy to provide you the 2nd level service support. How can I help you?\n', 
-    'greeting': "Hi, please describe your issue. For example, one tag can't be tracked anymore. If you want to quit, type in Bye or press ctrl + c.\n",
-    'ending': 'Goodbye! I wish you further success with our products.\n',
+    'default_block' : 'Hello! I am the Service Robot from XXX Technologies GmbH. I am happy to provide you the 2nd level service support. How can I help you?', 
+    'greeting': "Hi, please describe your issue. For example, one tag can't be tracked anymore. If you want to quit, type in Bye or press ctrl + c.",
+    'ending': 'Goodbye! I wish you further success with our products.',
     'sat_related' : 'Regarding to satellites, we have the following suggestions: \n' + 
             '    1. Check the LED of the satellite, when everything is normal, you should see [bold]white[/] color. \n' +
             '    2. If you see [bold blue]blue[/], it means the satellite is not being detected via network, try to restart it by unplugging and plugging the ethernet cable. \n' +
@@ -35,6 +36,7 @@ responses = {
             '    3. If you have a poor accuracy in one specific area, you should confirm if you have possible interferences such as 5G communication or big metal construction. \n' +
             '    If you still have the error behavior, please contact [bold]3rd_level_support@xxx.com[/].',
     'other_topic': "Sorry, i don't get you. Try to describe your question more specifically. Or try to contact our 3rd level support via [bold]3rd_level_support@xxx.com[/]."
+}
 #file to record the user's input
 filename = './session.txt'
 
@@ -185,7 +187,7 @@ def record_message(message):
 
 def main():
     global patterns 
-    patterns = create_patterns(list_words, key_list)
+    patterns = create_patterns(key_words, key_list)
     #print(patterns)
     check_session_number()
     console = Console()
@@ -205,7 +207,7 @@ def main():
             response = send_message(user_input)
             console.print('[bold magenta]Service Bot: [/]' + response)
 
-if __name__ = '__main__':
+if __name__ == '__main__':
     try:
         main()
     except KeyboardInterrupt:
