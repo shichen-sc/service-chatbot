@@ -16,14 +16,14 @@ The approach to this project is a rule based chat bot:
 
 - Keywords
     - Keywords in an product error case can be normally eaily defined, for example, in this project, it is the hardware satellite, tag, tracking, software. Including the normal greeting words, such as hi, hello, goodbye. Alle these keywords are defined as a global variable:
-    ´´´python
+    ´´´
         key_words = ['hello', 'bye', 'satellite', 'tag', 'software', 'tracking']
     ´´´ 
 
 - Synonyms
     - As these keywords can be addressed in different ways by different users, for example, hi, hello, or how are you. Thus, synonyms is being covered using method WordNet of module nltk. Which is a lexcial database for English language.
     - While the synonyms of those specific product name such as satellite, tag are being maintained manually. As normall these alternative words are quite familiar and standardized in industrial area. For example, some customers may use anchor instead of satellite.
-    ´´´python
+    ´´´
         dict_synonyms = {}
 
         for word in key_words:
