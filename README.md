@@ -17,34 +17,34 @@ The approach to this project is a rule based chat bot:
 - Keywords
     - Keywords in an product error case can be normally eaily defined, for example, in this project, it is the hardware satellite, tag, tracking, software. Including the normal greeting words, such as hi, hello, goodbye. Alle these keywords are defined as a global variable:
     ´´´python
-    key_words = ['hello', 'bye', 'satellite', 'tag', 'software', 'tracking']
+        key_words = ['hello', 'bye', 'satellite', 'tag', 'software', 'tracking']
     ´´´ 
 
 - Synonyms
     - As these keywords can be addressed in different ways by different users, for example, hi, hello, or how are you. Thus, synonyms is being covered using method WordNet of module nltk. Which is a lexcial database for English language.
     - While the synonyms of those specific product name such as satellite, tag are being maintained manually. As normall these alternative words are quite familiar and standardized in industrial area. For example, some customers may use anchor instead of satellite.
     ´´´python
-    dict_synonyms = {}
+        dict_synonyms = {}
 
-    for word in key_words:
-        synonyms = []
-        if word == 'hello':
-            for each_syn in wordnet.synsets(word):
-                for each_lem in each_syn.lemmas():
-                    synonyms.append(each_lem.name())
-            dict_synonyms[word] = set(synonyms)
+        for word in key_words:
+            synonyms = []
+            if word == 'hello':
+                for each_syn in wordnet.synsets(word):
+                    for each_lem in each_syn.lemmas():
+                        synonyms.append(each_lem.name())
+                dict_synonyms[word] = set(synonyms)
 
-        elif word == 'bye':
-            for each_syn in wordnet.synsets(word):
-                for each_lem in each_syn.lemmas():
-                    synonyms.append(each_lem.name())
-            #as quit and exit can also used by user to end conversation session instead of lemmatisation of Bye
-            synonyms.extend(['quit', 'exit'])
-            dict_synonyms[word] = set(synonyms)
-        # the following words are the names of the product, thus manually extend the similar wording
-        elif word == 'satellite':
-            synonyms.extend(['satellite', 'anchor'])
-            dict_synonyms[word] = set(synonyms)
+            elif word == 'bye':
+                for each_syn in wordnet.synsets(word):
+                    for each_lem in each_syn.lemmas():
+                        synonyms.append(each_lem.name())
+                #as quit and exit can also used by user to end conversation session instead of lemmatisation of Bye
+                synonyms.extend(['quit', 'exit'])
+                dict_synonyms[word] = set(synonyms)
+            # the following words are the names of the product, thus manually extend the similar wording
+            elif word == 'satellite':
+                synonyms.extend(['satellite', 'anchor'])
+                dict_synonyms[word] = set(synonyms)
     ´´´
 
 - The Header
