@@ -113,3 +113,14 @@ def generate_keywords_dict(list_words, key_list):
 
     #print(generate_keywords_dict(list_words, key_list))
     return keywords
+
+# using regular expression to compile pattern for each keyword
+def create_patterns(list_words, key_list):
+    keywords = generate_keywords_dict(list_words, key_list)
+    patterns = {}
+
+    for intent, keys in keywords.items():
+        patterns[intent] = re.compile('|'.join(keys))
+
+    #print(patterns)
+    return patterns
