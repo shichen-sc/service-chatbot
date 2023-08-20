@@ -2,6 +2,7 @@ import nltk
 from nltk.corpus import wordnet
 import re
 from datetime import datetime
+from rich.console import Console
 
 # global variables
 # key words as key for the user input
@@ -169,3 +170,25 @@ def record_message(message):
     timestamp = datetime.now().strftime('%Y-%D %H:%M:%S')
     with open(filename, 'a') as file:
         file.write(f'{timestamp}: {message}\n')
+
+def main():
+    global patterns 
+    patterns = create_patterns(list_words, key_list)
+    #print(patterns)
+    check_session_number()
+    console = Console()
+    console.print('[bold magenta]Service Bot: [/]' + responses['default_block'])
+    flag = True
+    while(flag==True):
+        console.print('[bold magenta]You: [/]', end = '')
+        user_input = input().lower()
+        record_message(user_input)
+        #console.print(user_input)
+        matched_intent = match_intent(user_input)
+
+        if matched_intent == 'ending':
+            flag = False
+            console.print('[bold magenta]Service Bot: [/]' + responses['ending'])
+        else:
+            response = send_message(user_input)
+            console.print('[bold magenta]Service Bot: [/]' + response)
