@@ -185,6 +185,12 @@ def record_message(message):
     with open(filename, 'a') as file:
         file.write(f'{timestamp}: {message}\n')
 
+# print out session text after termination of the conversion
+def show_session_record():
+    with open(filename, 'r') as file:
+        file_content = file.read()
+        print(f'Following is the record of user input of each session: \n{file_content}')
+
 def main():
     global patterns 
     patterns = create_patterns(key_words, key_list)
@@ -212,4 +218,5 @@ if __name__ == '__main__':
         main()
     except KeyboardInterrupt:
         print('\nInterrupted by User...')
+        show_session_record()
         sys.exit(0)
