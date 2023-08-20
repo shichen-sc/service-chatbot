@@ -195,7 +195,7 @@ def main():
     flag = True
     while(flag==True):
         console.print('[bold magenta]You: [/]', end = '')
-        user_input = input().lower()
+        user_input = input('\n').lower()
         record_message(user_input)
         #console.print(user_input)
         matched_intent = match_intent(user_input)
