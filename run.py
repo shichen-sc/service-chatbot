@@ -124,3 +124,28 @@ def create_patterns(list_words, key_list):
 
     #print(patterns)
     return patterns
+
+# function to match intent
+def match_intent(message):
+    matched_intent = None
+    
+    for intent,pattern in patterns.items():
+        if re.search(pattern, message):
+            matched_intent=intent
+
+    return matched_intent
+
+# function to give response
+def respond(message):
+    intent=match_intent(message)
+    
+    key='other_topic'
+    
+    if intent in responses:
+        key=intent
+    
+    return responses[key]
+
+# function to send user input
+def send_message(message):
+    return respond(message)
