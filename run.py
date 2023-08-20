@@ -3,6 +3,7 @@ from nltk.corpus import wordnet
 import re
 from datetime import datetime
 from rich.console import Console
+import sys
 
 # global variables
 # key words as key for the user input
@@ -192,3 +193,10 @@ def main():
         else:
             response = send_message(user_input)
             console.print('[bold magenta]Service Bot: [/]' + response)
+
+if __name__ = '__main__':
+    try:
+        main()
+    except KeyboardInterrupt:
+        print('\nInterrupted by User...')
+        sys.exit(0)
