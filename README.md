@@ -224,5 +224,5 @@ The approach to this project is a rule based chat bot:
 
 ## Deployment
 
-- 
-
+- The running application is deployed on heroku with the link: https://service-chat-bot-9f40aca7c5fd.herokuapp.com/
+- All source code can be found on git hub: https://github.com/shichen-sc/service-chatbot
