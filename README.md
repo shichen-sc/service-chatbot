@@ -47,90 +47,182 @@ The approach to this project is a rule based chat bot:
                 dict_synonyms[word] = set(synonyms)
     ```
 
-- The Header
-    - The header shows the most important feature of the learning platform that "driven by the AI"
-    - The header tells the users that the platform aims to provide a flexible and customized learning experience using the AI technology
-    - The header provides a link for the users to select the disired language, level (same as the Start Learning in the navigiation, which is currently not implemented yet)
-    - The headers contains a image that clearly shows it is language learning platform
-    ![A screenshot of the header](/assets/images/README/header.png)
+- Intent of User Input
+    - Regular expression is being used here in order to identify intent of the question (user input). For example, user can greet by typing "hi", "hello", etc. And all these will be treated as a value of the intent key "greeting".
+    - Same is applied for the other intent, for example, intent "sat_related" includes "I have a problem on one satellite", "one of the satellites are not lighting up."
+    ```
+    for each in list(dict_synonyms['hello']):
+        keywords['greeting'].append('.*' + each + '.*')
 
-- The Feature Section
-    - The feature section lists 4 main features that makes the platform special:
-        - AI-driven conversation, which tells the users that the platform uses heavily AI technology to provide the users conversation with all scenarios
-        - Up-to-date news, which tells the users that the platform provides update-to-date-news written in a level that fits to the user, instead of providing the traditional text books
-        - Learning group, which tells the users that the users can create or join a learning group on the platform directly
-        - Talk to native speakers, which tells the users that the platform provides a lot of qualified native speakers
-    ![A screenshot of the feature section](/assets/images/README/feature.png)
+    keywords['ending'] = []
+    for each in list(dict_synonyms['bye']):
+        keywords['ending'].append('.*' + each + '.*')
 
-- The Video Section
-    - The video section contains a youtube video, that explains the user how AI can enhance the language learning experience. (The video should be ultimately created by Learn Through, apparently there is no such a material yet, and therefore, a relevant youtube video is being used.)
-    ![A screenshot of the video section](/assets/images/README/video.png)
+    for each in list(dict_synonyms['satellite']):
+        keywords['sat_related'].append('.*' + each + '.*')
+        keywords['sat_related'].append('.*' + each + '.*' + "n't" + '.*')
+        keywords['sat_related'].append('.*' + each + '.*' + 'not' + '.*')
+        keywords['sat_related'].append('.*' + each + '.*' + 'issue' + '.*')
+        keywords['sat_related'].append('.*' + each + '.*' + 'problem' + '.*')
+        keywords['sat_related'].append('.*' + 'issue' + '.*' + each + '.*')
+        keywords['sat_related'].append('.*' + 'problem' + '.*' + each + '.*')
+    ```
 
-- The Comment Section
-    - The comment section allows the users to review some of the comments from the students who have already registered and used the platform. So that the users know better how Learn Through can help and what is special at Learn Through
-    ![A screenshot of the comment section](/assets/images/README/comment.png)
+- Compile
+    - These intent patterns will be further compiled into regular expression object using re.compile().
+    ```
+    def create_patterns(key_words, key_list):
+    keywords = generate_keywords_dict(key_words, key_list)
+    patterns = {}
 
-- The Footer
-    - The footer contains again the logo of the platform
-    - The footer contains again a clickable anchor that directs the user to the next page where they should select the desired language and level (currently not implemented yet)
-    - The footer contains the social media links of the platform, facebook, twitter, youtube, instagram. (As of there is no official link yet, the landing page of each is being used)
-    ![A screenshot of the footer](/assets/images/README/footer.png)
+    for intent, keys in keywords.items():
+        patterns[intent] = re.compile('|'.join(keys))
+
+    #print(patterns)
+    return patterns
+    ```
+
+- Responses
+    - Responses of the chat bot are maintained in a dictionary:
+    ```
+    responses = {
+    'default_block' : 'Hello! I am the Service Robot from XXX Technologies GmbH. I am happy to provide you the 2nd level service support. How can I help you?', 
+    'greeting': "Hi, please describe your issue. For example, one tag can't be tracked anymore. If you want to quit, type in Bye or press ctrl + c.",
+    'ending': 'Goodbye! I wish you further success with our products.',
+    'sat_related' : 'Regarding to satellites, we have the following suggestions: \n' + 
+            '    1. Check the LED of the satellite, when everything is normal, you should see [bold]white[/] color. \n' +
+            '    2. If you see [bold blue]blue[/], it means the satellite is not being detected via network, try to restart it by unplugging and plugging the ethernet cable. \n' +
+            '    3. If you see [bold red]red[/], it means the satellite has a fatal [bold red]error[/], try to restart it by unplugging and plugging the ethernet cable. \n' +
+            '    If you still have the error behavior, you probably have a defective hardware. Please contact [bold]3rd_level_support@xxx.com[/].',
+    ```
+    - And the user input will be checked to find the intent, and then passed further to get a proper answer:
+    ```
+    # function to match intent
+    def match_intent(message):
+        matched_intent = None
+        
+        for intent,pattern in patterns.items():
+            if re.search(pattern, message):
+                matched_intent=intent
+
+        return matched_intent
+
+    # function to give response
+    def respond(message):
+        intent=match_intent(message)
+        
+        key='other_topic'
+        
+        if intent in responses:
+            key=intent
+        
+        return responses[key]
+
+    # function to send user input
+    def send_message(message):
+        return respond(message)
+    ```
+
+- Recording User's Input
+    - For each session of conversation, the user input will be written in to a session.txt file. The file will be checked for the number of session, then will be initiated with a correction session number, e.g. SESSION 2, afterwards, each user input will be recorded with a timestamp.
+    ```
+    # check the session number and write session number for current conversation
+    def check_session_number():
+        count = 1
+        with open(filename, 'r+') as file:
+            lines = file.readlines()
+            for line in lines:
+                if 'SESSION' in line:
+                    count += 1
+            file.write(f'\nSESSION {count}:\n')
+
+    # record the user input and save it into a txt file
+    def record_message(message):
+        timestamp = datetime.now().strftime('%Y-%D %H:%M:%S')
+        with open(filename, 'a') as file:
+            file.write(f'{timestamp}: {message}\n')
+    ```
+    
+- Rich Console
+    - In order to make the terminal more readable, method Console from module rich is being used. This allows to apply some style to some wording, for example, bold, color.
+    ```
+    console = Console()
+    console.print('[bold magenta]Service Bot: [/]' + responses['default_block'])
+    ```
+
+- Start Chat Bot
+    - Bot will be started with initializing the session.txt file and a welcome response "default_block"
+    - A variable flag is being set in order to control the terminal loop
+    - User can type 'bye', 'quit', 'exit' or ctrl+c to stop the terminal
+    - And the session.txt will be printed out onto the terminal after the termination only to prove the content exists (this can be removed of course)
+    ```
+    def main():
+    global patterns 
+    patterns = create_patterns(key_words, key_list)
+    #print(patterns)
+    check_session_number()
+    console = Console()
+    console.print('[bold magenta]Service Bot: [/]' + responses['default_block'])
+    flag = True
+    while(flag==True):
+        console.print('[bold magenta]You: [/]', end = '')
+        user_input = input('\n').lower()
+        record_message(user_input)
+        #console.print(user_input)
+        matched_intent = match_intent(user_input)
+
+        if matched_intent == 'ending':
+            flag = False
+            console.print('[bold magenta]Service Bot: [/]' + responses['ending'])
+        else:
+            response = send_message(user_input)
+            console.print('[bold magenta]Service Bot: [/]' + response)
+
+    if __name__ == '__main__':
+        try:
+            main()
+        except KeyboardInterrupt:
+            print('\nInterrupted by User...')
+            show_session_record()
+            sys.exit(0)
+    ```
 
 ## Testing
-
-- I tested and confirmed that the page works in browsers: Chrome, Firefox
-- I confirm that this project is responsive
-
-## Bugs
-
-### Solved bugs
-- When the screen width is smaller as 950px, the anchor element in the header is not clickable
-    - The issue is that the hero image overlaps with the anchor. To solve, z-index: 1 is being added to the style for this anchor element
     ```
-    #hero-text {
-        top: 20%;
-        left: 50%;
-        transform: translate(-50%, -20%);
-        clear: left;
-        z-index: 1;
-    }
+    [nltk_data]   Package wordnet is already up-to-date!
+    Service Bot: Hello! I am the Service Robot from XXX Technologies GmbH. I am happy to provide 
+    you the 2nd level service support. How can I help you?
+    You: 
+    I can't charge the tags..
+    Service Bot: Regarding to tags, we have the following suggestions: 
+        1. Make sure they are fully charged, you should see the led blinking 0.5Hz yellow when they
+    are being charged correctly. 
+        2. If they are being tracked by the system, you should see the led blinking 1Hz green if 
+    you shake them. 
+        3. If the tag has battery and not working normally, try to do a reset cycle by pressing the
+    button on the tag for 10 seconds until it blinks red
+        If you still have the error behavior, you probably have a defective hardware. Please 
+    contact 3rd_level_support@xxx.com.
+    You: 
+    ^C
+    Interrupted by User...
+    Following is the record of user input of each session: 
+
+    SESSION 1:
+    2023-08/20/23 22:07:33: hi
+    2023-08/20/23 22:07:59: i have a problem on one of the satellites.
+    2023-08/20/23 22:09:46: how about tag?
+    2023-08/20/23 22:09:56: i have a issue on tag
+
+    SESSION 2:
+    2023-08/20/23 23:53:53: hi
+    2023-08/20/23 23:54:06: i can't charge the tags.
+
+    SESSION 3:
+    2023-08/20/23 23:55:47: i can't charge the tags.
     ```
-
-### Unsolved bugs
-- As the navigation bar is being fixed on the top of the page, once i click on the next slide in the comment section, the view of the page will be reset to middle, as a result, part of the photo of the students are being hidden by the navigation bar, see the picture here
-![A screenshot of the bug](/assets/images/README/bug.png)
-
-## Validator Testing
-
-- HTML
-    - No erros were returned when passing through the official W3C validator
-- CSS
-    - No errors were found when passing through the official (Jigsaw) validator
-- Accessibility
-    - I confirmed that the colors and fonts chosen are easy to read and accessible by running it through lighthouse in devtools
-    ![A screenshot of the scores estimated by lighthouse](/assets/images/README/lighthouse.png)
 
 ## Deployment
 
-- The site was deployed to Github pages. The steps to deploy are as follows:
-    - In the GitHub repository, navigate to the Settings tab
-    - Click on Page from the side menu
-    - Choose main for the Branch, and click on save
-    - Wait and refresh the page, the link to the page should be generated
-- Link for the page:
-    - [Learn Through](https://shichen-sc.github.io/learn-through/)
+- 
 
-
-## Credits
-
-### Content
-- The code to make the social media links was taken from the CI [Love Running](https://github.com/shichen-sc/love-running) Project
-- The code for the comment section was referenced from [Codepen](https://codepen.io/Schepp/pen/WNbQByE)
-
-### Media
-- The images in the project were all take from [Freepik](https://www.freepik.com/free-photos-vectors)
-
-## To-Do
-- Solve the open bug (described above)
-- Write html as the link for the button "Start Learning" on the navigation bar, where the users can select the desired language and current level
-- Write html for Sign Up and Login

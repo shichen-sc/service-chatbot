@@ -103,6 +103,8 @@ def generate_keywords_dict(list_words, key_list):
         keywords['tag_related'].append('.*' + each + '.*' + 'not' + '.*')
         keywords['tag_related'].append('.*' + each + '.*' + 'issue' + '.*')
         keywords['tag_related'].append('.*' + each + '.*' + 'problem' + '.*')
+        keywords['tag_related'].append('.*' + "n't" + '.*' + each + '.*')
+        keywords['tag_related'].append('.*' + "not" + '.*' + each + '.*')
         keywords['tag_related'].append('.*' + 'issue' + '.*' + each + '.*')
         keywords['tag_related'].append('.*' + 'problem' + '.*' + each + '.*')
         keywords['tag_related'].append('.*' + each + '.*' + 'tracked' + '.*')
@@ -130,12 +132,12 @@ def generate_keywords_dict(list_words, key_list):
         keywords['track_related'].append('.*' + 'issue' + '.*' + each + '.*')
         keywords['track_related'].append('.*' + 'problem' + '.*' + each + '.*')
 
-    #print(generate_keywords_dict(list_words, key_list))
+    #print(generate_keywords_dict(key_words, key_list))
     return keywords
 
 # using regular expression to compile pattern for each keyword
-def create_patterns(list_words, key_list):
-    keywords = generate_keywords_dict(list_words, key_list)
+def create_patterns(key_words, key_list):
+    keywords = generate_keywords_dict(key_words, key_list)
     patterns = {}
 
     for intent, keys in keywords.items():
